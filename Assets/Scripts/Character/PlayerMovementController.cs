@@ -10,6 +10,8 @@ public class PlayerMovementController : MonoBehaviour
     public float terminalVelocity = -10f;
     public float fallAcceleration = 5f;
 
+    public float cayoteTime = 1.0f;
+
     private CharacterController _characterController;
     private float vertSpeed;
 
@@ -79,7 +81,7 @@ public class PlayerMovementController : MonoBehaviour
 
     private bool IsGroundIsUnderFoots(float rayCastDistance)
     {
-        return Physics.Raycast(transform.position + Vector3.left * _characterController.radius * 1.01f, Vector3.down, rayCastDistance) ||
-            Physics.Raycast(transform.position + Vector3.right * _characterController.radius * 1.01f, Vector3.down, rayCastDistance);
+        return Physics.Raycast(transform.position + Vector3.left * _characterController.radius * cayoteTime, Vector3.down, rayCastDistance) ||
+            Physics.Raycast(transform.position + Vector3.right * _characterController.radius * cayoteTime, Vector3.down, rayCastDistance);
     }
 }
