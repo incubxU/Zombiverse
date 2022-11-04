@@ -8,7 +8,6 @@ public class PlayerMovementController : MonoBehaviour
 	public float gravity = -9.8f;
 	public float terminalVelocity = -10f;
 	public float fallAcceleration = 10f;
-	public bool hitGround = false;
 
 	private CharacterController _characterController;
 	private float vertSpeed;
@@ -29,7 +28,7 @@ public class PlayerMovementController : MonoBehaviour
 		movement = Vector3.forward * deltaZ;
 
 
-		hitGround = false;
+		bool hitGround = false;
 		RaycastHit hit;
 		if (vertSpeed < 0 && Physics.Raycast(transform.position, Vector3.down, out hit))
 		{
