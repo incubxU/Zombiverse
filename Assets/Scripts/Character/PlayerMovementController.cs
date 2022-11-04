@@ -71,7 +71,7 @@ public class PlayerMovementController : MonoBehaviour
 
 			movement.y = vertSpeed;
 
-
+		//TODO correct rotation mechanism
 		Vector3 pScale = transform.localScale;
 		if (!Mathf.Approximately(deltaZ, 0))
 		{
