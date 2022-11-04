@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerMovementController : MonoBehaviour
@@ -11,7 +12,6 @@ public class PlayerMovementController : MonoBehaviour
 
     private CharacterController _characterController;
     private float vertSpeed;
-    private ControllerColliderHit contact;
 
 
     void Start()
@@ -28,37 +28,8 @@ public class PlayerMovementController : MonoBehaviour
         float horizontalMovement = GetHorizontalMovement();
         movement.x = horizontalMovement;
 
-        if (CheckGroundHit())
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                vertSpeed = jumpSpeed;
-            }
-            else
-            {
-                vertSpeed = minFall;
-            }
-        }
-        else
-        {
-            vertSpeed += gravity * fallAcceleration * Time.deltaTime;
-            if (vertSpeed < terminalVelocity)
-            {
-                vertSpeed = terminalVelocity;
-            }
 
-            if (_characterController.isGrounded)
-            {
-                if (Vector3.Dot(movement, contact.normal) < 0)
-                {
-                    movement = contact.normal * speed;
-                }
-                else
-                {
-                    movement += contact.normal * speed;
-                }
-            }
-        }
+        vertSpeed = GetVerticalSpeed();
         movement.y = vertSpeed;
 
         //TODO correct rotation mechanism
@@ -74,26 +45,41 @@ public class PlayerMovementController : MonoBehaviour
         _characterController.Move(movement);
     }
 
+    private float GetVerticalSpeed()
+    {
+        return CheckGrounded() ? PerformJumpIfPressed() : CalculateFallSpeed();
+    }
+
+    private float CalculateFallSpeed()
+    {
+        float fallSpeed = vertSpeed + gravity * fallAcceleration * Time.deltaTime;
+        vertSpeed = fallSpeed;
+        if (fallSpeed < terminalVelocity)
+        {
+            fallSpeed = terminalVelocity;
+        }
+        return fallSpeed;
+    }
+
+    private float PerformJumpIfPressed()
+    {
+        return Input.GetKeyDown(KeyCode.Space) ? jumpSpeed : minFall;
+    }
+
     private float GetHorizontalMovement()
     {
         return Input.GetAxis("Horizontal") * speed;
     }
 
-    private bool CheckGroundHit()
+    private bool CheckGrounded()
     {
-        bool hitGround = false;
-        RaycastHit hit;
-        if (vertSpeed < 0 && Physics.Raycast(transform.position, Vector3.down, out hit))
-        {
-            float check = (_characterController.height + _characterController.radius) / _characterController.height / 1.9f;
-            hitGround = hit.distance <= check;
-        }
-
-        return hitGround;
+        float rayCastDistance = (_characterController.height + _characterController.radius) / 1.9f;
+        return vertSpeed < 0 && IsGroundIsUnderFoots(rayCastDistance);
     }
 
-    void OnControllerColliderHit(ControllerColliderHit hit)
+    private bool IsGroundIsUnderFoots(float rayCastDistance)
     {
-        contact = hit;
+        return Physics.Raycast(transform.position + Vector3.left * _characterController.radius * 1.01f, Vector3.down, rayCastDistance) ||
+            Physics.Raycast(transform.position + Vector3.right * _characterController.radius * 1.01f, Vector3.down, rayCastDistance);
     }
 }
