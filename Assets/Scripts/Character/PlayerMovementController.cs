@@ -10,14 +10,33 @@ public class PlayerMovementController : MonoBehaviour
     public float terminalVelocity = -10f;
     public float fallAcceleration = 5f;
 
+    public float climbSpeed = 10f;
+
     public float cayoteTime = 1.0f;
 
     private CharacterController _characterController;
-    private float vertSpeed;
+    public float vertSpeed;
 
+
+    private bool _canClimb;
+    private bool _isClimbing;
+    private bool _impulseToGetUp;
+
+    public void CanClimb(bool canClimb)
+    {
+        _canClimb = canClimb;
+        if (!canClimb && _isClimbing)
+        {
+            transform.LookAt(transform.position + Vector3.forward, Vector3.forward);
+            _characterController.Move(new Vector3(0,0,-2));
+        }
+    }
 
     void Start()
     {
+        Debug.Log("Here");
+        _isClimbing = false;
+        _canClimb = false;
         vertSpeed = minFall;
         _characterController = GetComponent<CharacterController>();
     }
@@ -25,18 +44,19 @@ public class PlayerMovementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         Vector3 movement = Vector3.zero;
 
         float horizontalMovement = GetHorizontalMovement();
         movement.x = horizontalMovement;
 
-
-        vertSpeed = GetVerticalSpeed();
+        vertSpeed = GetVerticalMovement();
+        if (_impulseToGetUp) vertSpeed += 10f;
         movement.y = vertSpeed;
 
         //TODO correct rotation mechanism
         Vector3 pScale = transform.localScale;
-        if (!Mathf.Approximately(horizontalMovement, 0))
+        if (!Mathf.Approximately(horizontalMovement, 0) && !_isClimbing)
         {
             pScale.x = Mathf.Sign(horizontalMovement) * Mathf.Abs(pScale.x);
             transform.localScale = pScale;
@@ -47,9 +67,32 @@ public class PlayerMovementController : MonoBehaviour
         _characterController.Move(movement);
     }
 
-    private float GetVerticalSpeed()
+    private float GetVerticalMovement()
     {
-        return CheckGrounded() ? PerformJumpIfPressed() : CalculateFallSpeed();
+        float climbing = Input.GetAxis("Vertical") * climbSpeed;
+        if (_canClimb && !Mathf.Approximately(climbing, 0))
+        {
+            if (!_isClimbing)
+            {
+                transform.LookAt(transform.position + Vector3.left, Vector3.right);
+                _characterController.Move(new Vector3(0, 0, 2));
+                _isClimbing = true;
+            }
+            return climbing;
+        }
+
+        if (!_canClimb)
+        {
+            _isClimbing = false;
+        }
+
+        if (!_isClimbing)
+        {
+            _impulseToGetUp = false;
+            return CheckGrounded() ? PerformJumpIfPressed() : CalculateFallSpeed();
+        }
+
+        return 0f;
     }
 
     private float CalculateFallSpeed()
@@ -83,5 +126,14 @@ public class PlayerMovementController : MonoBehaviour
     {
         return Physics.Raycast(transform.position + Vector3.left * _characterController.radius * cayoteTime, Vector3.down, rayCastDistance) ||
             Physics.Raycast(transform.position + Vector3.right * _characterController.radius * cayoteTime, Vector3.down, rayCastDistance);
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        TransientFloor floor = other.gameObject.GetComponent<TransientFloor>();
+        if (floor != null && other.transform.position.y < transform.position.y)
+        {
+            _impulseToGetUp = true;
+        }
     }
 }
