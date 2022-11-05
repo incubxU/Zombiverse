@@ -407,7 +407,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5588864976235346413}
-  - component: {fileID: 5588864977125321468}
   - component: {fileID: 5588864977125321471}
   - component: {fileID: 5588864977125321470}
   m_Layer: 0
@@ -433,26 +432,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -3.807, z: 0}
---- !u!114 &5588864977125321468
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5588864977125321457}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61b10ef3bcc4c2f408c36aba0fab903c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 4.5
-  jumpSpeed: 12
-  minFall: -1.5
-  gravity: -9.8
-  terminalVelocity: -10
-  fallAcceleration: 5
-  climbSpeed: 5
-  cayoteTime: 1
 --- !u!143 &5588864977125321471
 CharacterController:
   m_ObjectHideFlags: 0
@@ -483,13 +462,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61b10ef3bcc4c2f408c36aba0fab903c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 4.5
-  jumpSpeed: 20
-  minFall: -1.5
+  speed: 15
+  jumpSpeed: 25
+  minFall: -2
   gravity: -9.8
-  terminalVelocity: -10
-  fallAcceleration: 5
-  climbSpeed: 5
+  terminalVelocity: -50
+  fallAcceleration: 6
+  ladderImpulse: 15
+  climbSpeed: 15
   cayoteTime: 1
 --- !u!1 &5588864977134064686
 GameObject:

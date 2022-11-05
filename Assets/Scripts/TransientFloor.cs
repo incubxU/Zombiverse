@@ -20,7 +20,8 @@ public class TransientFloor : MonoBehaviour
         if (!Mathf.Approximately(Input.GetAxis("Vertical"), 0) || _isPlayerInside)
         {
             _collider.isTrigger = true;
-        } else
+        }
+        else
         {
             _collider.isTrigger = false;
 
@@ -29,11 +30,17 @@ public class TransientFloor : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        _isPlayerInside = true;
+        if (other.GetComponent<PlayerMovementController>() != null)
+        {
+            _isPlayerInside = true;
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        _isPlayerInside = false;
+        if (other.GetComponent<PlayerMovementController>() != null)
+        {
+            _isPlayerInside = false;
+        }
     }
 }
