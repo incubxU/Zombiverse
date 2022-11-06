@@ -17,7 +17,7 @@ public class FollowCam : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        Vector3 targetPosition = new Vector3(target.position.x + offset.x, target.position.y + offset.y, transform.position.z);
+        Vector3 targetPosition = new Vector3(target.position.x + offset.x, target.position.y + offset.y, target.position.z + offset.z);
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _velocity, smoothTime);
     }
 }
