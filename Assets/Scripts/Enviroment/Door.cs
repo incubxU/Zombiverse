@@ -9,7 +9,7 @@ public class Door : MonoBehaviour
 
     public float coolDownTimeInSec;
 
-    private GameObject _player;
+    private PlayerMovementController _player;
     private float _currentCoolDown;
 
 
@@ -38,10 +38,7 @@ public class Door : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E) && _player != null && _currentCoolDown <= 0)
         {
-            Debug.Log("Teleported");
-            _player.GetComponent<CharacterController>().enabled = false;
-            _player.transform.position = connectedDoor.GetDoorPosition();
-            _player.GetComponent<CharacterController>().enabled = true;
+            _player.teleportToPoint(connectedDoor.GetDoorPosition());
             _player = null;
             connectedDoor.setCoolDown(coolDownTimeInSec);
             _currentCoolDown = 0;
@@ -50,10 +47,7 @@ public class Door : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<PlayerMovementController>() != null)
-        {
-            _player = other.gameObject;
-        }
+        _player = other.GetComponent<PlayerMovementController>();
     }
 
     private void OnTriggerExit(Collider other)

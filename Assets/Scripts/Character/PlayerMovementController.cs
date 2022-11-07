@@ -22,16 +22,46 @@ public class PlayerMovementController : MonoBehaviour
 
     private bool _canClimb;
     private bool _isClimbing;
+
+
+    private float _xPosition;
     private bool _impulseToGetUp;
 
     public void CanClimb(bool canClimb)
     {
-        _canClimb = canClimb;
+        this._canClimb = canClimb;
         if (!canClimb && _isClimbing)
         {
-            transform.LookAt(transform.position + Vector3.forward, Vector3.forward);
-            _characterController.Move(new Vector3(0, 0, -2));
+            AdjustClimbingPosition();
+            _isClimbing = false;
         }
+    }
+
+    private void AdjustClimbingPosition()
+    {
+        Vector3 newPoint = transform.position;
+        if (_isClimbing)
+        {
+            transform.LookAt(transform.position + Vector3.forward);
+            newPoint.x = _xPosition;
+        }
+        else
+        {
+            transform.LookAt(transform.position + Vector3.left);
+            newPoint.x = _xPosition - 3;
+        }
+        teleportToPoint(newPoint, false);
+    }
+
+    public void teleportToPoint(Vector3 point, bool saveXPosition = true)
+    {
+        _characterController.enabled = false;
+        transform.position = point;
+        if (saveXPosition)
+        {
+            _xPosition = point.x;
+        }
+        _characterController.enabled = true;
     }
 
     void Start()
@@ -49,18 +79,16 @@ public class PlayerMovementController : MonoBehaviour
         Vector3 movement = Vector3.zero;
 
         float horizontalMovement = GetHorizontalMovement();
-        movement.x = horizontalMovement;
+        movement.z = horizontalMovement;
 
         _vertSpeed = GetVerticalMovement();
         if (_impulseToGetUp) _vertSpeed += ladderImpulse;
         movement.y = _vertSpeed;
 
         //TODO correct rotation mechanism
-        Vector3 pScale = transform.localScale;
         if (!Mathf.Approximately(horizontalMovement, 0) && !_isClimbing)
         {
             transform.LookAt(transform.position + Vector3.forward * horizontalMovement);
-            transform.localScale = pScale;
         }
 
 
@@ -71,26 +99,36 @@ public class PlayerMovementController : MonoBehaviour
     private float GetVerticalMovement()
     {
         float climbing = Input.GetAxis("Vertical") * climbSpeed;
-        if (_canClimb && !Mathf.Approximately(climbing, 0))
-        {
-            if (!_isClimbing)
-            {
-                transform.LookAt(transform.position + Vector3.left, Vector3.right);
-                _characterController.Move(new Vector3(0, 0, 2));
-                _isClimbing = true;
-            }
-            return climbing;
-        }
 
-        if (!_canClimb)
+        bool isGrounded = CheckGrounded();
+        if (_canClimb)
         {
-            _isClimbing = false;
+            if (isGrounded && climbing < 0)
+            {
+                if (_isClimbing)
+                {
+                    AdjustClimbingPosition();
+                    _isClimbing = false;
+                }
+            }
+            else
+            {
+                if (!Mathf.Approximately(climbing, 0))
+                {
+                    if (!_isClimbing)
+                    {
+                        AdjustClimbingPosition();
+                        _isClimbing = true;
+                    }
+                    return climbing;
+                }
+            }
         }
 
         if (!_isClimbing)
         {
             _impulseToGetUp = false;
-            return CheckGrounded() ? PerformJumpIfPressed() : CalculateFallSpeed();
+            return isGrounded ? PerformJumpIfPressed() : CalculateFallSpeed();
         }
 
         return 0f;
@@ -111,9 +149,9 @@ public class PlayerMovementController : MonoBehaviour
 
     private void checkHitHead()
     {
-        float rayCastDistance = (_characterController.height + _characterController.radius) / 1.9f;
+        float rayCastDistance = (_characterController.height + _characterController.radius) * transform.localScale.y / 1.9f;
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.up, out hit, rayCastDistance))
+        if (Physics.Raycast(transform.position, Vector3.up, out hit, rayCastDistance))// && hit.collider.GetComponent<TransientFloor>() == null)
         {
             _vertSpeed = minFall;
         }
@@ -131,14 +169,16 @@ public class PlayerMovementController : MonoBehaviour
 
     private bool CheckGrounded()
     {
-        float rayCastDistance = (_characterController.height + _characterController.radius) / 1.9f;
+        float rayCastDistance = (_characterController.height + _characterController.radius) * transform.localScale.y / 1.9f;
         return _vertSpeed < 0 && IsGroundIsUnderFoots(rayCastDistance);
     }
 
     private bool IsGroundIsUnderFoots(float rayCastDistance)
     {
-        return Physics.Raycast(transform.position + Vector3.left * _characterController.radius * cayoteTime, Vector3.down, rayCastDistance) ||
-            Physics.Raycast(transform.position + Vector3.right * _characterController.radius * cayoteTime, Vector3.down, rayCastDistance);
+        Vector3 footOffset = Vector3.forward * _characterController.radius * cayoteTime * transform.localScale.z;
+        RaycastHit hit;
+        return Physics.Raycast(transform.position + footOffset, Vector3.down, out hit, rayCastDistance) && hit.collider.GetComponent<Climbable>() == null ||
+            Physics.Raycast(transform.position - footOffset, Vector3.down, rayCastDistance) && hit.collider.GetComponent<Climbable>() == null;
     }
 
     private void OnTriggerExit(Collider other)
