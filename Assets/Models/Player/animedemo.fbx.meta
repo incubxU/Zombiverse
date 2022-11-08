@@ -1,11 +1,20 @@
 fileFormatVersion: 2
-guid: 7bd433ddb5ccbdc45a36ded575987972
+guid: d0ebda73df6a05e4c9e45b0a86368a1b
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable:
   - first:
-      74: 5350942583051745754
-    second: "\u0440\u0443\u043A\u0438|\u0440\u0443\u043A\u0438Action"
+      74: 1379787164268123389
+    second: "\u0440\u0443\u043A\u0438|hit"
+  - first:
+      74: 7715669718241032603
+    second: "\u0440\u0443\u043A\u0438|hit.2"
+  - first:
+      74: 2786879691381434997
+    second: "\u0440\u0443\u043A\u0438|jump"
+  - first:
+      74: 679397780662613646
+    second: "\u0440\u0443\u043A\u0438|run"
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -38,7 +47,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 0.07015655
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -91,7 +100,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 1
+    globalScale: 0.07015655
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

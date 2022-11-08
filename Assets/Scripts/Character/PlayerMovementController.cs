@@ -17,11 +17,12 @@ public class PlayerMovementController : MonoBehaviour
     public float cayoteTime = 1.0f;
 
     private CharacterController _characterController;
+    private Animator _animator;
+
     private float _vertSpeed;
-
-
     private bool _canClimb;
     private bool _isClimbing;
+
 
 
     private float _xPosition;
@@ -69,6 +70,7 @@ public class PlayerMovementController : MonoBehaviour
         _isClimbing = false;
         _canClimb = false;
         _vertSpeed = minFall;
+        _animator = GetComponent<Animator>();
         _characterController = GetComponent<CharacterController>();
     }
 
@@ -80,6 +82,7 @@ public class PlayerMovementController : MonoBehaviour
 
         float horizontalMovement = GetHorizontalMovement();
         movement.z = horizontalMovement;
+        _animator.SetFloat("Speed", Mathf.Abs(horizontalMovement));
 
         _vertSpeed = GetVerticalMovement();
         if (_impulseToGetUp) _vertSpeed += ladderImpulse;
