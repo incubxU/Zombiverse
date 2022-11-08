@@ -1097,6 +1097,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2948093601721323476, guid: 367d1e93eb871ee4e9372b536290528d, type: 3}
+      propertyPath: speed
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 2948093601721323476, guid: 367d1e93eb871ee4e9372b536290528d, type: 3}
+      propertyPath: cayoteTime
+      value: 0.8
+      objectReference: {fileID: 0}
     - target: {fileID: 3414576240659729216, guid: 367d1e93eb871ee4e9372b536290528d, type: 3}
       propertyPath: m_RootOrder
       value: 4
