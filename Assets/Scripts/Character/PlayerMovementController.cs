@@ -177,8 +177,8 @@ public class PlayerMovementController : MonoBehaviour
     {
         Vector3 footOffset = Vector3.forward * _characterController.radius * cayoteTime * transform.localScale.z;
         RaycastHit hit;
-        return Physics.Raycast(transform.position + footOffset, Vector3.down, out hit, rayCastDistance) && hit.collider.GetComponent<Climbable>() == null ||
-            Physics.Raycast(transform.position - footOffset, Vector3.down, rayCastDistance) && hit.collider.GetComponent<Climbable>() == null;
+        return Physics.Raycast(transform.position + footOffset, Vector3.down, out hit, rayCastDistance) && hit.collider != null && hit.collider.GetComponent<Climbable>() == null ||
+            Physics.Raycast(transform.position - footOffset, Vector3.down, rayCastDistance) && hit.collider != null && hit.collider.GetComponent<Climbable>() == null;
     }
 
     private void OnTriggerExit(Collider other)
