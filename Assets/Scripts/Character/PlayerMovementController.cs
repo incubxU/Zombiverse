@@ -35,6 +35,7 @@ public class PlayerMovementController : MonoBehaviour
         {
             AdjustClimbingPosition();
             _isClimbing = false;
+            _animator.SetBool("Climbing", false);
         }
     }
 
@@ -82,7 +83,7 @@ public class PlayerMovementController : MonoBehaviour
 
         float horizontalMovement = GetHorizontalMovement();
         movement.z = horizontalMovement;
-        _animator.SetFloat("Speed", Mathf.Abs(horizontalMovement));
+        _animator.SetFloat("Speed",horizontalMovement * horizontalMovement);
 
         _vertSpeed = GetVerticalMovement();
         if (_impulseToGetUp) _vertSpeed += ladderImpulse;
@@ -96,6 +97,7 @@ public class PlayerMovementController : MonoBehaviour
 
 
         movement *= Time.deltaTime;
+        _animator.SetFloat("Speed", Mathf.Abs(horizontalMovement)* Math.Abs(_vertSpeed));
         _characterController.Move(movement);
     }
 
@@ -104,6 +106,7 @@ public class PlayerMovementController : MonoBehaviour
         float climbing = Input.GetAxis("Vertical") * climbSpeed;
 
         bool isGrounded = CheckGrounded();
+        _animator.SetBool("InAir", !isGrounded);
         if (_canClimb)
         {
             if (isGrounded && climbing < 0)
@@ -112,6 +115,7 @@ public class PlayerMovementController : MonoBehaviour
                 {
                     AdjustClimbingPosition();
                     _isClimbing = false;
+                    _animator.SetBool("Climbing", false);
                 }
             }
             else
@@ -122,6 +126,7 @@ public class PlayerMovementController : MonoBehaviour
                     {
                         AdjustClimbingPosition();
                         _isClimbing = true;
+                        _animator.SetBool("Climbing", true);
                     }
                     return climbing;
                 }
