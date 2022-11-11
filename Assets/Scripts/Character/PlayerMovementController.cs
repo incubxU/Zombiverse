@@ -16,10 +16,12 @@ public class PlayerMovementController : MonoBehaviour
 
     public float cayoteTime = 1.0f;
 
+    public float ladderStickingLength = 3;
+
     private CharacterController _characterController;
     private Animator _animator;
 
-    private float _vertSpeed;
+    public float _vertSpeed;
     private bool _canClimb;
     private bool _isClimbing;
 
@@ -50,7 +52,7 @@ public class PlayerMovementController : MonoBehaviour
         else
         {
             transform.LookAt(transform.position + Vector3.left);
-            newPoint.x = _xPosition - 3;
+            newPoint.x = _xPosition - ladderStickingLength;
         }
         teleportToPoint(newPoint, false);
     }
@@ -83,9 +85,10 @@ public class PlayerMovementController : MonoBehaviour
 
         float horizontalMovement = GetHorizontalMovement();
         movement.z = horizontalMovement;
-        _animator.SetFloat("Speed",horizontalMovement * horizontalMovement);
+        _animator.SetFloat("Speed", Mathf.Abs(horizontalMovement));
 
         _vertSpeed = GetVerticalMovement();
+        _animator.SetFloat("VeticalSpped", _vertSpeed);
         if (_impulseToGetUp) _vertSpeed += ladderImpulse;
         movement.y = _vertSpeed;
 
@@ -97,7 +100,6 @@ public class PlayerMovementController : MonoBehaviour
 
 
         movement *= Time.deltaTime;
-        _animator.SetFloat("Speed", Mathf.Abs(horizontalMovement)* Math.Abs(_vertSpeed));
         _characterController.Move(movement);
     }
 
@@ -177,16 +179,16 @@ public class PlayerMovementController : MonoBehaviour
 
     private bool CheckGrounded()
     {
-        float rayCastDistance = (_characterController.height + _characterController.radius) * transform.localScale.y / 1.9f;
+        float rayCastDistance = (_characterController.height + _characterController.radius) / 1.9f;
         return _vertSpeed < 0 && IsGroundIsUnderFoots(rayCastDistance);
     }
 
     private bool IsGroundIsUnderFoots(float rayCastDistance)
     {
-        Vector3 footOffset = Vector3.forward * _characterController.radius * cayoteTime * transform.localScale.z;
+        Vector3 footOffset = Vector3.forward * _characterController.radius * cayoteTime;
         RaycastHit hit;
-        return Physics.Raycast(transform.position + footOffset, Vector3.down, out hit, rayCastDistance) && hit.collider != null && hit.collider.GetComponent<Climbable>() == null ||
-            Physics.Raycast(transform.position - footOffset, Vector3.down, rayCastDistance) && hit.collider != null && hit.collider.GetComponent<Climbable>() == null;
+        return Physics.Raycast(transform.position + footOffset, Vector3.down, rayCastDistance) ||
+            Physics.Raycast(transform.position - footOffset, Vector3.down, rayCastDistance);
     }
 
     private void OnTriggerExit(Collider other)
