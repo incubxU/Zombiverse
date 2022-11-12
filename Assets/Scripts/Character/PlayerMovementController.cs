@@ -85,7 +85,7 @@ public class PlayerMovementController : MonoBehaviour
 
         float horizontalMovement = GetHorizontalMovement();
         movement.z = horizontalMovement;
-        
+
         _vertSpeed = GetVerticalMovement();
         if (_impulseToGetUp) _vertSpeed += ladderImpulse;
         movement.y = _vertSpeed;
@@ -98,7 +98,7 @@ public class PlayerMovementController : MonoBehaviour
 
 
         _animator.SetFloat("Speed", Mathf.Abs(horizontalMovement));
-        _animator.SetFloat("VerticalSpeed", movement.y);
+        _animator.SetFloat("VerticalSpeed", _vertSpeed);
         movement *= Time.deltaTime;
         _characterController.Move(movement);
     }
