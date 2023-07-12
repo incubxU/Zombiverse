@@ -186,7 +186,6 @@ public class PlayerMovementController : MonoBehaviour
     private bool IsGroundIsUnderFoots(float rayCastDistance)
     {
         Vector3 footOffset = Vector3.forward * _characterController.radius * cayoteTime;
-        RaycastHit hit;
         return Physics.Raycast(transform.position + footOffset, Vector3.down, rayCastDistance) ||
             Physics.Raycast(transform.position - footOffset, Vector3.down, rayCastDistance);
     }
